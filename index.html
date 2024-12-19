@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Budget & Income Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #1877f2;
+            margin-bottom: 10px;
+        }
+
+        .entry-form {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #444;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .btn {
+            background-color: #1877f2;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #166fe5;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #1877f2;
+            margin-bottom: 10px;
+        }
+
+        .card.profit {
+            background-color: #e7f5e7;
+        }
+
+        .card.loss {
+            background-color: #fee7e7;
+        }
+
+        .entries-list {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tab-container {
+            margin-bottom: 15px;
+        }
+
+        .tab-button {
+            padding: 8px 16px;
+            border: none;
+            background-color: #f0f2f5;
+            cursor: pointer;
+            margin-right: 5px;
+            border-radius: 5px;
+        }
+
+        .tab-button.active {
+            background-color: #1877f2;
+            color: white;
+        }
+
+        .summary-section {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .summary-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .summary-card h4 {
+            color: #1877f2;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .summary-card p {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #444;
+        }
+
+        .amount-positive {
+            color: #28a745;
+        }
+
+        .amount-negative {
+            color: #dc3545;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .date-filter {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .date-filter {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Professional Budget & Income Management System</h1>
+            <p>Comprehensive tracking of business and personal finances</p>
+        </div>
+
+        <div class="entry-form">
+            <h2>Add New Entry</h2>
+            <form id="entryForm">
+                <div class="form-group">
+                    <label for="type">Entry Type</label>
+                    <select id="type" required>
+                        <option value="expense">Expense</option>
+                        <option value="income">Income</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="platform">Platform/Category</label>
+                    <select id="platform" required>
+                        <option value="facebook">Facebook Ads</option>
+                        <option value="ecommerce">E-commerce</option>
+                        <option value="operational">Operational Expenses</option>
+                        <option value="marketing">Other Marketing</option>
+                        <option value="salary">Salary & Payroll</option>
+                        <option value="utilities">Utilities & Rent</option>
+                        <option value="software">Software & Tools</option>
+                        <option value="other">Other Expenses</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="category">Subcategory</label>
+                    <input type="text" id="category" required placeholder="e.g., Ad Campaign, Inventory, Office Supplies">
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input type="number" id="amount" required min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes (Optional)</label>
+                    <input type="text" id="notes" placeholder="Add any additional details">
+                </div>
+                <button type="submit" class="btn">Add Entry</button>
+            </form>
+        </div>
+
+        <div class="dashboard">
+            <div class="card">
+                <h3>Total Income</h3>
+                <p id="totalIncome">$0.00</p>
+            </div>
+            <div class="card">
+                <h3>Total Expenses</h3>
+                <p id="totalExpenses">$0.00</p>
+            </div>
+            <div class="card" id="pnlCard">
+                <h3>Net Profit/Loss</h3>
+                <p id="netPnL">$0.00</p>
+            </div>
+        </div>
+
+        <div class="summary-section">
+            <h3>Expense Breakdown</h3>
+            <div class="summary-grid" id="expenseBreakdown">
+                <!-- Dynamically populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="entries-list">
+            <div class="filter-section">
+                <div class="tab-container">
+                    <button class="tab-button active" onclick="financeManager.showEntries('all')">All Entries</button>
+                    <button class="tab-button" onclick="financeManager.showEntries('income')">Income</button>
+                    <button class="tab-button" onclick="financeManager.showEntries('expense')">Expenses</button>
+                </div>
+                <div class="date-filter">
+                    <label>From: <input type="date" id="dateFrom" onchange="financeManager.updateDisplay()"></label>
+                    <label>To: <input type="date" id="dateTo" onchange="financeManager.updateDisplay()"></label>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Platform/Category</th>
+                        <th>Subcategory</th>
+                        <th>Amount</th>
+                        <th>Notes</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="entriesTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        class FinanceManager {
+            constructor() {
+                this.entries = JSON.parse(localStorage.getItem('financeEntries')) || [];
+                this.form = document.getElementById('entryForm');
+                this.tableBody = document.getElementById('entriesTableBody');
+                this.currentView = 'all';
+                
+                this.initializeEventListeners();
+                this.updateDisplay();
+            }
+
+            initializeEventListeners() {
+                this.form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.addEntry();
+                });
+            }
+
+            addEntry() {
+                const entry = {
+                    id: Date.now(),
+                    type: document.getElementById('type').value,
+                    platform: document.getElementById('platform').value,
+                    category: document.getElementById('category').value,
+                    amount: parseFloat(document.getElementById('amount').value),
+                    date: document.getElementById('date').value,
+                    notes: document.getElementById('notes').value
+                };
+
+                this.entries.push(entry);
+                this.saveToLocalStorage();
+                this.updateDisplay();
+                this.form.reset();
+            }
+
+            deleteEntry(id) {
+                this.entries = this.entries.filter(entry => entry.id !== id);
+                this.saveToLocalStorage();
+                this.updateDisplay();
+            }
+
+            saveToLocalStorage() {
+                localStorage.setItem('financeEntries', JSON.stringify(this.entries));
+            }
+
+            showEntries(type) {
+                this.currentView = type;
+                document.querySelectorAll('.tab-button').forEach(button => {
+                    button.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                this.updateDisplay();
+            }
+
+            getFilteredEntries() {
+                let filtered = [...this.entries];
+                
+                // Date filter
+                const dateFrom = document.getElementById('dateFrom').value;
+                const dateTo = document.getElementById('dateTo').value;
+                
+                if (dateFrom) {
+                    filtered = filtered.filter(entry => entry.date >= dateFrom);
+                }
+                if (dateTo) {
+                    filtered = filtered.filter(entry => entry.date <= dateTo);
+                }
+                
+                // Type filter
+                if (this.currentView !== 'all') {
+                    filtered = filtered.filter(entry => entry.type === this.currentView);
+                }
+                
+                return filtered;
+            }
+
+            updateDisplay() {
+                this.updateTable();
+                this.updateTotals();
+                this.updateExpenseBreakdown();
+            }
+
+            updateTable() {
+                this.tableBody.innerHTML = '';
+                
+                const filteredEntries = this.getFilteredEntries();
+
+                filteredEntries.sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .forEach(entry => {
+                        const row = document.createElement('tr');
+                        const amountClass = entry.type === 'income' ? 'amount-positive' : 'amount-negative';
+                        const amountPrefix = entry.type === 'income' ? '+' : '-';
+                        
+                        row.innerHTML = `
+                            <td>${entry.date}</td>
+                            <td>${entry.type.charAt(0).toUpperCase() + entry.type.slice(1)}</td>
+                            <td>${entry.platform}</td>
+                            <td>${entry.category}</td>
+                            <td class="${amountClass}">${amountPrefix}$${entry.amount.toFixed(2)}</td>
+                            <td>${entry.notes || '-'}</td>
+                            <td>
+                                <button class="delete-btn" onclick="financeManager.deleteEntry(${entry.id})">
+                                    Delete
+                                </button>
+                            </td>
+                        `;
+                        this.tableBody.appendChild(row);
+                    });
+            }
+
+            updateTotals() {
+                const filteredEntries = this.getFilteredEntries();
+                
+                const income = filteredEntries
+                    .filter(entry => entry.type === 'income')
+                    .reduce((sum, entry) => sum + entry.amount, 0);
+
+                const expenses = filteredEntries
+                    .filter(entry => entry.type === 'expense')
+                    .reduce((sum, entry) => sum + entry.amount, 0);
+
+                const pnl = income - expenses;
+
+                document.getElementById('totalIncome').textContent = `$${income.toFixed(2)}`;
+                document.getElementById('totalExpenses').textContent = `$${expenses.toFixed(2)}`;
+                document.getElementById('netPnL').textContent = `${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}`;
+
+                const pnlCard = document.getElementById('pnlCard');
+                pnlCard.className = 'card ' + (pnl >= 0 ? 'profit' : 'loss');
+            }
+
+            updateExpenseBreakdown() {
+                const filteredEntries = this.getFilteredEntries();
+                const expenseBreakdown = document.getElementById('expenseBreakdown');
+                expenseBreakdown.innerHTML = '';
+
+                const platformTotals = filteredEntries
+                    .filter(entry => entry.type === 'expense')
+                    .reduce((acc, entry) => {
+                        acc[entry.platform] = (acc[entry.platform] || 0) + entry.amount;
+                        return acc;
+                    }, {});
+
+                for (const [platform, total] of Object.entries(platformTotals)) {
+                    const card = document.createElement('div');
+                    card.className = 'summary-card';
+                    card.innerHTML = `
+                        <h4>${platform.charAt(0).toUpperCase() + platform.slice(1)}</h4>
+                        <p>$${total.toFixed(2)}</p>
+                    `;
+                    expenseBreakdown.appendChild(card);
+                }
+            }
+        }
+
+        const financeManager = new FinanceManager();
+    </script>
+</body>
+</html>
